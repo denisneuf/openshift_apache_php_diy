@@ -1,0 +1,80 @@
+#!/bin/bash
+
+function check_httpd() {
+
+  #check httpd working
+
+  local httpd_bin=${ROOT_DIR}/httpd/bin/
+
+  if [[ ! -e  ${httpd_bin} ]]; then
+      echo "APACHE not installed."${httpd_bin}
+      install_httpd
+  else
+
+      echo "APACHE is installed."${APACHE_VERSION}
+      local ini=${TEMPLATE_DIR}/httpd.conf.tmpl
+      #echo ${TEMPLATE_DIR}/httpd.conf.tmpl
+
+      echo $OPENSHIFT_RUNTIME_DIR/httpd/bin/httpd -v
+
+      mkdir -p ${ROOT_DIR}/etc/httpd/
+
+      local ini=${TEMPLATE_DIR}/httpd.conf.tmpl
+      if [[ -e  ${ini} ]]; then
+          echo "Commented Copy conf for ${1}."
+          #yes | cp ${ini} ${ROOT_DIR}/httpd/conf/myhttpd.conf
+      fi
+
+  fi
+
+}
+
+
+function install_httpd() {
+
+  local pkg=httpd-${APACHE_VERSION}.tar.gz
+  #local asc=httpd-${APACHE_VERSION}.tar.gz.asc
+
+  mkdir -p ${BUILD_DIR}
+  echo "BUILD_DIR >> "${BUILD_DIR}
+
+  pushd ${BUILD_DIR}
+
+  #wget -O ${asc} https://www.apache.org/dist/httpd/${asc}
+
+  wget -O ${pkg} http://apache.uvigo.es/httpd/${pkg}
+
+  #tar -zxf httpd-2.4.12.tar.gz
+
+  tar -xzf ${BUILD_DIR}/${pkg}
+
+  pushd httpd-${APACHE_VERSION}
+
+  if [[ ! -f config.log || `tail -n 1 config.log | tr -d '\n'` !=  'configure: exit 0' ]]; then
+
+    echo "Configuring APACHE."
+    ./configure \
+    --prefix=$OPENSHIFT_RUNTIME_DIR/httpd \
+    --with-included-apr \
+    --enable-so \
+    --enable-auth-digest \
+    --enable-rewrite \
+    --enable-setenvif \
+    --enable-mime \
+    --enable-deflate \
+    --enable-headers
+    make install
+
+  fi
+
+  echo $OPENSHIFT_RUNTIME_DIR/srv/httpd/bin/apachectl start
+
+
+  #$OPENSHIFT_RUNTIME_DIR/srv/httpd/bin/apachectl start
+
+  #gpg --import KEYS
+
+  #gpg --verify httpd-2.4.25.tar.gz.asc httpd-2.4.25.tar.gz
+
+
+}

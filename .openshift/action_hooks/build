@@ -1,0 +1,70 @@
+#!/bin/bash
+
+echo ""
+echo "-----------"
+echo "BUILD"
+echo "-----------"
+echo ""
+
+# Exit on first error.
+set -e
+
+# OpenShift sets GIT_DIR to . which terminates pull with an error:
+# Not a git repository: '.'
+# test
+unset GIT_DIR
+
+umask 077
+
+# Load common
+source ${OPENSHIFT_REPO_DIR}/.openshift/action_hooks/common
+
+# Configure versions
+
+PCRE_VERSION='8.38'
+
+PHP_VERSION='5.6.30'
+APACHE_VERSION='2.2.32'
+
+
+ICU_VERSION='54.1'
+
+LIBMCRYPT_VERSION='2.5.8'
+LIBTOOL_VERSION='2.4.6'
+RE2C_VERSION='0.14.3'
+BISON_VERSION='2.7.1'
+
+
+# Setup dir references
+ROOT_DIR=${OPENSHIFT_RUNTIME_DIR}
+BUILD_DIR=${OPENSHIFT_TMP_DIR}/build
+CONFIG_DIR=${OPENSHIFT_DIY_DIR}/conf
+TEMPLATE_DIR=${OPENSHIFT_REPO_DIR}/.openshift/tmpl
+
+DATA_DIR=${OPENSHIFT_DATA_DIR}/build
+
+# Push the libs path to the PATH
+export PATH=${ROOT_DIR}/libs/bin:$PATH
+
+
+
+#gpg --import KEYS
+
+#gpg --verify httpd-2.4.25.tar.gz.asc httpd-2.4.25.tar.gz
+
+
+
+
+source ${OPENSHIFT_REPO_DIR}/.openshift/action_hooks/build_php_libs
+
+source ${OPENSHIFT_REPO_DIR}/.openshift/action_hooks/build_httpd
+
+source ${OPENSHIFT_REPO_DIR}/.openshift/action_hooks/build_php
+
+#echo ${OPENSHIFT_REPO_DIR}/.openshift/action_hooks/build_php
+
+#install_httpd
+
+check_httpd
+
+#check_php

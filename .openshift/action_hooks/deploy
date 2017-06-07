@@ -1,0 +1,101 @@
+#!/bin/bash
+
+#/tmp/build/php-5.6.30/sapi/fpm/fpm/fpm_conf.c -o sapi/fpm/fpm/fpm_conf.lo
+
+echo ""
+echo "-----------"
+echo "DEPL==Y^Y"
+echo "-----------"
+echo ""
+
+set -e
+
+source ${OPENSHIFT_REPO_DIR}/.openshift/action_hooks/common
+
+BUILD_DIR=${OPENSHIFT_TMP_DIR}/build
+#NGINX_DIR=${OPENSHIFT_RUNTIME_DIR}/nginx/
+#PHP_DIR=${OPENSHIFT_RUNTIME_DIR}/php5/
+#TEMPLATE_DIR=${OPENSHIFT_REPO_DIR}/.openshift/tmpl
+
+umask 077
+
+#mkdir -p ${BUILD_DIR}
+
+echo "Pre-processing BUILD_DIR"
+
+#df -h ${BUILD_DIR}
+
+#php-5.6.30.tar.gz
+#rm -rf ${BUILD_DIR}/
+#rm -rf ${BUILD_DIR}
+
+#df -h ${BUILD_DIR}
+
+echo "Finished rm BUILD_DIR";
+echo `date`;
+
+
+
+dest_dir=${OPENSHIFT_DATA_DIR}current
+
+# Replace the diy/ directory with provided clean Moodle installation
+#
+
+echo "existe:"${OPENSHIFT_REPO_DIR}diy
+
+if [ ! -d "${dest_dir}" ]; then
+  mkdir -p $dest_dir
+  cp -rf ${OPENSHIFT_REPO_DIR}diy/* ${dest_dir}/
+fi
+
+if [ -d ${OPENSHIFT_REPO_DIR}diy ]; then
+  rm -rf ${OPENSHIFT_REPO_DIR}diy
+  #echo ${OPENSHIFT_REPO_DIR}diy
+fi
+
+
+#diy/runtime/httpd/htdocs
+
+
+
+server_root=${OPENSHIFT_RUNTIME_DIR}httpd/htdocs
+
+
+
+
+if [ -d "${server_root}" ] && [ -d "${dest_dir}" ]; then
+  echo "//\\----------------------------------/"
+  echo ${server_root}
+  echo "/----------------------------------/"
+  echo ${dest_dir}
+  echo "/----------------------------------/"
+  pwd
+  echo DESTDIR: ${dest_dir}
+  echo SERVERROOT: ${OPENSHIFT_REPO_DIR}/httpd/htdocs
+
+  #ln -sf ${dest_dir} ${server_root}
+
+fi
+
+#ln -sf ${dest_dir} ${OPENSHIFT_REPO_DIR}/httpd/htdocs
+
+
+#$OPENSHIFT_RUNTIME_DIR/httpd/bin/apachectl start
+
+
+
+echo "IP::::PORT";
+echo $OPENSHIFT_DIY_IP":"$OPENSHIFT_DIY_PORT
+
+#$OPENSHIFT_RUNTIME_DIR/httpd/bin/apachectl stop
+
+$OPENSHIFT_RUNTIME_DIR/httpd/bin/apachectl configtest
+
+#$OPENSHIFT_RUNTIME_DIR/httpd/bin/apachectl start
+
+echo "Finished DEPLOY";
+#echo ${OPENSHIFT_RUNTIME_DIR}
+
+# Will exit with status of last command.
+
+exit

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo ""
+echo "-----------"
+echo "POST DEPLOY"
+echo "-----------"
+echo ""
+
+
+
+#$OPENSHIFT_RUNTIME_DIR/httpd/bin/apachectl start
